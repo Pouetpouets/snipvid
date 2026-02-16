@@ -5,33 +5,58 @@ import 'package:snipvid/screens/music_screen.dart';
 import 'package:snipvid/screens/vibe_screen.dart';
 import 'package:snipvid/screens/processing_screen.dart';
 import 'package:snipvid/screens/export_screen.dart';
+import 'package:snipvid/widgets/page_transitions.dart';
 
 final router = GoRouter(
   initialLocation: '/',
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomeScreen(),
+      pageBuilder: (context, state) => fadeSlideTransition(
+        context: context,
+        state: state,
+        child: const HomeScreen(),
+      ),
     ),
     GoRoute(
       path: '/photos',
-      builder: (context, state) => const PhotosScreen(),
+      pageBuilder: (context, state) => slideRightTransition(
+        context: context,
+        state: state,
+        child: const PhotosScreen(),
+      ),
     ),
     GoRoute(
       path: '/music',
-      builder: (context, state) => const MusicScreen(),
+      pageBuilder: (context, state) => slideRightTransition(
+        context: context,
+        state: state,
+        child: const MusicScreen(),
+      ),
     ),
     GoRoute(
       path: '/vibe',
-      builder: (context, state) => const VibeScreen(),
+      pageBuilder: (context, state) => slideRightTransition(
+        context: context,
+        state: state,
+        child: const VibeScreen(),
+      ),
     ),
     GoRoute(
       path: '/processing',
-      builder: (context, state) => const ProcessingScreen(),
+      pageBuilder: (context, state) => fadeSlideTransition(
+        context: context,
+        state: state,
+        child: const ProcessingScreen(),
+      ),
     ),
     GoRoute(
       path: '/export',
-      builder: (context, state) => const ExportScreen(),
+      pageBuilder: (context, state) => fadeSlideTransition(
+        context: context,
+        state: state,
+        child: const ExportScreen(),
+      ),
     ),
   ],
 );

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:snipvid/services/project_service.dart';
-import 'package:snipvid/theme/app_theme.dart';
+import 'package:snipvid/widgets/gradient_text.dart';
+import 'package:snipvid/widgets/gradient_button.dart';
+import 'package:snipvid/widgets/animated_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -19,8 +21,8 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             children: [
               const Spacer(),
-              // Logo
-              const Text(
+              // Logo with gradient
+              const GradientText(
                 'SNIPVID',
                 style: TextStyle(
                   fontSize: 40,
@@ -35,14 +37,14 @@ class HomeScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const Spacer(),
-              // CTA Principal
-              ElevatedButton(
+              // CTA Principal with gradient and scale animation
+              GradientButton(
                 onPressed: () {
                   projectService.createNewProject();
                   context.push('/photos');
                 },
                 child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.add),
                     SizedBox(width: 8),
@@ -69,31 +71,25 @@ class HomeScreen extends StatelessWidget {
                     separatorBuilder: (_, __) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
                       final project = projects[index];
-                      return GestureDetector(
+                      return AnimatedCard(
+                        width: 100,
+                        height: 100,
+                        showGradientBorder: false,
                         onTap: () {
                           projectService.loadProject(project.id);
                           context.push('/photos');
                         },
-                        child: Container(
-                          width: 100,
-                          decoration: BoxDecoration(
-                            color: AppTheme.surface,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.video_library, size: 32),
-                                const SizedBox(height: 8),
-                                Text(
-                                  project.name ?? 'Sans titre',
-                                  style: const TextStyle(fontSize: 12),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.video_library, size: 32),
+                            const SizedBox(height: 8),
+                            Text(
+                              project.name ?? 'Sans titre',
+                              style: const TextStyle(fontSize: 12),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
+                          ],
                         ),
                       );
                     },

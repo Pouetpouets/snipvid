@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
+// TODO: FFmpeg kit incompatible avec Xcode 26 - trouver alternative
+// import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
+// import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:snipvid/models/project.dart';
@@ -15,6 +16,7 @@ class VideoService {
   /// Génère une vidéo à partir des photos et de la musique
   /// 
   /// Retourne le path de la vidéo générée ou null si échec
+  /// TODO: Implémenter avec FFmpeg quand compatible Xcode 26
   Future<String?> generateVideo(Project project) async {
     if (project.photoPaths.isEmpty || project.music == null || project.vibe == null) {
       debugPrint('VideoService: Project incomplete');
@@ -31,29 +33,20 @@ class VideoService {
       // Paramètres selon le ratio
       final ratioParams = _getRatioParams(project.exportRatio);
       
-      // Construire la commande FFmpeg
-      final command = await _buildCommand(
-        photos: project.photoPaths,
-        musicPath: project.music!.url ?? '',
-        outputPath: outputPath,
-        vibeParams: vibeParams,
-        ratioParams: ratioParams,
-      );
+      debugPrint('VideoService: Would generate video with:');
+      debugPrint('  - ${project.photoPaths.length} photos');
+      debugPrint('  - Music: ${project.music!.title}');
+      debugPrint('  - Vibe: ${project.vibe!.label} (${vibeParams.photoDuration}s/photo)');
+      debugPrint('  - Ratio: ${ratioParams.width}x${ratioParams.height}');
 
-      debugPrint('FFmpeg command: $command');
-
-      // Exécuter FFmpeg
-      final session = await FFmpegKit.execute(command);
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        debugPrint('VideoService: Video generated at $outputPath');
-        return outputPath;
-      } else {
-        final logs = await session.getAllLogsAsString();
-        debugPrint('VideoService: FFmpeg failed - $logs');
-        return null;
-      }
+      // TODO: FFmpeg kit incompatible avec Xcode 26
+      // Simuler un délai de traitement pour le MVP
+      await Future.delayed(const Duration(seconds: 2));
+      
+      // Pour le MVP, on retourne un path placeholder
+      // La vraie génération sera implémentée quand on aura un plugin FFmpeg compatible
+      debugPrint('VideoService: [MOCK] Video would be at $outputPath');
+      return outputPath;
     } catch (e) {
       debugPrint('VideoService: Error - $e');
       return null;
@@ -138,25 +131,17 @@ class VideoService {
   }
 
   /// Ajoute un watermark à la vidéo
+  /// TODO: Implémenter avec FFmpeg quand compatible Xcode 26
   Future<String?> addWatermark(String videoPath, String watermarkPath) async {
     try {
       final tempDir = await getTemporaryDirectory();
       final outputPath = '${tempDir.path}/snipvid_watermarked_${DateTime.now().millisecondsSinceEpoch}.mp4';
 
-      // Position: coin bas droit, 10px de marge, opacity 70%
-      final command = '-i "$videoPath" '
-          '-i "$watermarkPath" '
-          '-filter_complex "[1:v]format=rgba,colorchannelmixer=aa=0.7[wm];[0:v][wm]overlay=W-w-20:H-h-20" '
-          '-c:a copy '
-          '-y "$outputPath"';
-
-      final session = await FFmpegKit.execute(command);
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        return outputPath;
-      }
-      return null;
+      debugPrint('VideoService: [MOCK] Would add watermark to $videoPath');
+      
+      // TODO: FFmpeg kit incompatible avec Xcode 26
+      // Pour le MVP, on retourne juste le path original
+      return videoPath;
     } catch (e) {
       debugPrint('VideoService: Watermark error - $e');
       return null;
