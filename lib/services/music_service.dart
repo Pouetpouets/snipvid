@@ -5,122 +5,103 @@ import 'package:snipvid/models/project.dart';
 /// MVP : Tracks bundlées dans assets/audio/
 /// V2 : Intégration Jamendo API
 class MusicService {
-  /// Tracks bundlées dans l'app (royalty-free)
-  /// 
-  /// À télécharger depuis https://pixabay.com/music/
-  /// Formats acceptés : MP3, durée 1-3 min
+  /// Tracks bundlées dans l'app (Pixabay - royalty-free)
   static final List<MusicTrack> bundledTracks = [
-    // 🔥 Upbeat / Dynamique
+    // 🔥 Upbeat / Energetic
     MusicTrack(
-      id: 'upbeat_1',
-      title: 'Happy Day',
-      artist: 'Upbeat',
-      duration: Duration(minutes: 2, seconds: 15),
-      url: 'assets/audio/happy_day.mp3',
+      id: 'vlog_hiphop',
+      title: 'Vlog Hip-Hop',
+      artist: 'ProducesPlatinum',
+      duration: Duration(minutes: 1, seconds: 53),
+      url: 'assets/audio/vlog_hiphop.mp3',
       isLocal: true,
     ),
     MusicTrack(
-      id: 'upbeat_2',
-      title: 'Good Vibes',
-      artist: 'Energetic',
+      id: 'groovy_trap',
+      title: 'Berry (Groovy Bass)',
+      artist: 'GiorgioVitté',
+      duration: Duration(minutes: 2, seconds: 22),
+      url: 'assets/audio/groovy_trap.mp3',
+      isLocal: true,
+    ),
+    MusicTrack(
+      id: 'no_sleep',
+      title: 'No Sleep',
+      artist: 'kontraa',
+      duration: Duration(minutes: 2, seconds: 46),
+      url: 'assets/audio/no_sleep_hiphop.mp3',
+      isLocal: true,
+    ),
+    
+    // 🌊 Chill / Relaxing
+    MusicTrack(
+      id: 'summer_lounge',
+      title: 'Night Summer Lounge',
+      artist: 'Bransboynd',
+      duration: Duration(minutes: 1, seconds: 41),
+      url: 'assets/audio/summer_lounge.mp3',
+      isLocal: true,
+    ),
+    MusicTrack(
+      id: 'lofi_jazzy',
+      title: 'Lo-fi Sentimental Jazzy',
+      artist: 'Sonican',
+      duration: Duration(minutes: 1, seconds: 40),
+      url: 'assets/audio/lofi_jazzy.mp3',
+      isLocal: true,
+    ),
+    MusicTrack(
+      id: 'nature_ambient',
+      title: 'New Age Nature',
+      artist: 'Sonican',
+      duration: Duration(minutes: 2, seconds: 24),
+      url: 'assets/audio/nature_ambient.mp3',
+      isLocal: true,
+    ),
+    
+    // 🎹 Emotional / Cinematic
+    MusicTrack(
+      id: 'cinematic_inspiring',
+      title: 'Inspiring Cinematic',
+      artist: 'Tunetank',
+      duration: Duration(minutes: 2, seconds: 12),
+      url: 'assets/audio/cinematic_inspiring.mp3',
+      isLocal: true,
+    ),
+    
+    // 🎬 Epic / Action
+    MusicTrack(
+      id: 'epic_adventure',
+      title: 'Epic Adventure',
+      artist: 'kornevmusic',
+      duration: Duration(minutes: 2, seconds: 0),
+      url: 'assets/audio/epic_adventure.mp3',
+      isLocal: true,
+    ),
+    MusicTrack(
+      id: 'sport_rock',
+      title: 'Inspiring Sport Rock',
+      artist: 'AlexGrohl',
+      duration: Duration(minutes: 2, seconds: 8),
+      url: 'assets/audio/sport_rock.mp3',
+      isLocal: true,
+    ),
+    MusicTrack(
+      id: 'dark_cyberpunk',
+      title: 'Dark Cyberpunk',
+      artist: 'FreeMusicLab',
       duration: Duration(minutes: 1, seconds: 58),
-      url: 'assets/audio/good_vibes.mp3',
-      isLocal: true,
-    ),
-    MusicTrack(
-      id: 'upbeat_3',
-      title: 'Celebrate',
-      artist: 'Party',
-      duration: Duration(minutes: 2, seconds: 30),
-      url: 'assets/audio/celebrate.mp3',
-      isLocal: true,
-    ),
-    
-    // 🌊 Chill / Lent
-    MusicTrack(
-      id: 'chill_1',
-      title: 'Peaceful Moments',
-      artist: 'Ambient',
-      duration: Duration(minutes: 3, seconds: 12),
-      url: 'assets/audio/peaceful_moments.mp3',
-      isLocal: true,
-    ),
-    MusicTrack(
-      id: 'chill_2',
-      title: 'Sunset Dreams',
-      artist: 'Relaxing',
-      duration: Duration(minutes: 2, seconds: 45),
-      url: 'assets/audio/sunset_dreams.mp3',
-      isLocal: true,
-    ),
-    MusicTrack(
-      id: 'chill_3',
-      title: 'Ocean Breeze',
-      artist: 'Nature',
-      duration: Duration(minutes: 3, seconds: 00),
-      url: 'assets/audio/ocean_breeze.mp3',
-      isLocal: true,
-    ),
-    
-    // 🎹 Emotional / Piano
-    MusicTrack(
-      id: 'emotional_1',
-      title: 'Memories',
-      artist: 'Piano',
-      duration: Duration(minutes: 2, seconds: 50),
-      url: 'assets/audio/memories.mp3',
-      isLocal: true,
-    ),
-    MusicTrack(
-      id: 'emotional_2',
-      title: 'Tender Heart',
-      artist: 'Emotional',
-      duration: Duration(minutes: 3, seconds: 20),
-      url: 'assets/audio/tender_heart.mp3',
-      isLocal: true,
-    ),
-    MusicTrack(
-      id: 'emotional_3',
-      title: 'Nostalgia',
-      artist: 'Cinematic',
-      duration: Duration(minutes: 2, seconds: 35),
-      url: 'assets/audio/nostalgia.mp3',
-      isLocal: true,
-    ),
-    
-    // 🎬 Epic / Cinematic
-    MusicTrack(
-      id: 'epic_1',
-      title: 'Rise Up',
-      artist: 'Epic',
-      duration: Duration(minutes: 2, seconds: 40),
-      url: 'assets/audio/rise_up.mp3',
-      isLocal: true,
-    ),
-    MusicTrack(
-      id: 'epic_2',
-      title: 'Adventure Awaits',
-      artist: 'Cinematic',
-      duration: Duration(minutes: 3, seconds: 05),
-      url: 'assets/audio/adventure_awaits.mp3',
-      isLocal: true,
-    ),
-    MusicTrack(
-      id: 'epic_3',
-      title: 'Triumphant',
-      artist: 'Orchestral',
-      duration: Duration(minutes: 2, seconds: 55),
-      url: 'assets/audio/triumphant.mp3',
+      url: 'assets/audio/dark_cyberpunk.mp3',
       isLocal: true,
     ),
   ];
 
   /// Catégories de musique
   static const Map<String, List<String>> categories = {
-    '🔥 Upbeat': ['upbeat_1', 'upbeat_2', 'upbeat_3'],
-    '🌊 Chill': ['chill_1', 'chill_2', 'chill_3'],
-    '🎹 Emotional': ['emotional_1', 'emotional_2', 'emotional_3'],
-    '🎬 Epic': ['epic_1', 'epic_2', 'epic_3'],
+    '🔥 Upbeat': ['vlog_hiphop', 'groovy_trap', 'no_sleep'],
+    '🌊 Chill': ['summer_lounge', 'lofi_jazzy', 'nature_ambient'],
+    '🎹 Cinematic': ['cinematic_inspiring'],
+    '🎬 Epic': ['epic_adventure', 'sport_rock', 'dark_cyberpunk'],
   };
 
   /// Récupère toutes les tracks
@@ -149,12 +130,15 @@ class MusicService {
       case VibeType.slow:
         return [
           ...getTracksByCategory('🌊 Chill'),
-          ...getTracksByCategory('🎹 Emotional'),
+          ...getTracksByCategory('🎹 Cinematic'),
         ];
       case VibeType.mix:
         return bundledTracks; // Toutes
       case VibeType.epic:
-        return getTracksByCategory('🎬 Epic');
+        return [
+          ...getTracksByCategory('🎬 Epic'),
+          ...getTracksByCategory('🎹 Cinematic'),
+        ];
     }
   }
 }
