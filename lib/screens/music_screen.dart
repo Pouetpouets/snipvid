@@ -2,36 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:snipvid/models/project.dart';
+import 'package:snipvid/services/music_service.dart';
 import 'package:snipvid/services/project_service.dart';
 import 'package:snipvid/theme/app_theme.dart';
-
-// Musiques de démo (à remplacer par Pixabay API)
-final _demoTracks = [
-  MusicTrack(
-    id: '1',
-    title: 'Happy Vibes',
-    artist: 'Upbeat',
-    duration: Duration(minutes: 2, seconds: 34),
-  ),
-  MusicTrack(
-    id: '2',
-    title: 'Emotional Piano',
-    artist: 'Slow',
-    duration: Duration(minutes: 3, seconds: 12),
-  ),
-  MusicTrack(
-    id: '3',
-    title: 'Epic Adventure',
-    artist: 'Cinematic',
-    duration: Duration(minutes: 2, seconds: 58),
-  ),
-  MusicTrack(
-    id: '4',
-    title: 'Summer Chill',
-    artist: 'Relaxing',
-    duration: Duration(minutes: 3, seconds: 45),
-  ),
-];
 
 class MusicScreen extends StatefulWidget {
   const MusicScreen({super.key});
@@ -41,7 +14,9 @@ class MusicScreen extends StatefulWidget {
 }
 
 class _MusicScreenState extends State<MusicScreen> {
+  final MusicService _musicService = MusicService();
   String? _selectedTrackId;
+  String _selectedCategory = '🔥 Upbeat';
 
   @override
   void initState() {
@@ -50,8 +25,17 @@ class _MusicScreenState extends State<MusicScreen> {
     _selectedTrackId = current?.id;
   }
 
+  List<MusicTrack> get _currentTracks {
+    if (_selectedCategory == 'Tous') {
+      return _musicService.getAllTracks();
+    }
+    return _musicService.getTracksByCategory(_selectedCategory);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final categories = ['Tous', ...MusicService.categories.keys];
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -69,6 +53,12 @@ class _MusicScreenState extends State<MusicScreen> {
             OutlinedButton(
               onPressed: () {
                 // TODO: File picker pour importer musique
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Import musique — bientôt disponible'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               },
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -83,7 +73,11 @@ class _MusicScreenState extends State<MusicScreen> {
             // Séparateur
             Row(
               children: [
-                Expanded(child: Divider(color: AppTheme.textSecondary.withOpacity(0.3))),
+                Expanded(
+                  child: Divider(
+                    color: AppTheme.textSecondary.withValues(alpha: 0.3),
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
@@ -91,29 +85,56 @@ class _MusicScreenState extends State<MusicScreen> {
                     style: TextStyle(color: AppTheme.textSecondary),
                   ),
                 ),
-                Expanded(child: Divider(color: AppTheme.textSecondary.withOpacity(0.3))),
-              ],
-            ),
-            const SizedBox(height: 24),
-            // Section populaires
-            Row(
-              children: [
-                const Text('🔥', style: TextStyle(fontSize: 18)),
-                const SizedBox(width: 8),
-                Text(
-                  'Populaires',
-                  style: Theme.of(context).textTheme.titleLarge,
+                Expanded(
+                  child: Divider(
+                    color: AppTheme.textSecondary.withValues(alpha: 0.3),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            // Filtres catégories
+            SizedBox(
+              height: 36,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: categories.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final cat = categories[index];
+                  final isSelected = cat == _selectedCategory;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedCategory = cat),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppTheme.accent : AppTheme.surface,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Text(
+                        cat,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : AppTheme.textSecondary,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
             // Liste tracks
             Expanded(
               child: ListView.separated(
-                itemCount: _demoTracks.length,
+                itemCount: _currentTracks.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
-                  final track = _demoTracks[index];
+                  final track = _currentTracks[index];
                   final isSelected = track.id == _selectedTrackId;
                   return _TrackTile(
                     track: track,
@@ -131,8 +152,10 @@ class _MusicScreenState extends State<MusicScreen> {
               onPressed: _selectedTrackId == null
                   ? null
                   : () {
-                      final track = _demoTracks.firstWhere((t) => t.id == _selectedTrackId);
-                      context.read<ProjectService>().setMusic(track);
+                      final track = _musicService.getTrackById(_selectedTrackId!);
+                      if (track != null) {
+                        context.read<ProjectService>().setMusic(track);
+                      }
                       context.push('/vibe');
                     },
               child: const Text('CONTINUER'),
@@ -176,9 +199,20 @@ class _TrackTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.play_circle_outline,
-              color: isSelected ? AppTheme.accent : AppTheme.textSecondary,
+            // Play button (TODO: implémenter preview audio)
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: isSelected 
+                    ? AppTheme.accent.withValues(alpha: 0.2)
+                    : AppTheme.background,
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: Icon(
+                Icons.play_arrow,
+                color: isSelected ? AppTheme.accent : AppTheme.textSecondary,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -189,6 +223,7 @@ class _TrackTile extends StatelessWidget {
                     track.title,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     '${_formatDuration(track.duration)} • ${track.artist}',
                     style: TextStyle(
